@@ -2,6 +2,8 @@
 (function(window, document, $) {
   //  引用自调用函数，提供全局变量
   function Game2048(opt) {
+
+
     //自动生成一个棋盘格局，提供一个对象传参
       /*
       * opt.prefix：html元素中的id/class前缀
@@ -16,6 +18,12 @@
     let winNum = 2048;
     //定义游戏结束标志
     let isGameOver = true;
+    //移动端xy坐标
+    let startX=0;
+    let startY=0;
+    let endX=0;
+    let endY=0;
+
     let board = new Board(len);
     let view = new View(prefix, len, size, margin);
     view.init();
@@ -44,6 +52,8 @@
     };
     //键盘监听事件
     $(document).keydown(function(e) {
+      //阻止浏览器默认事件
+      e.preventDefault()
       if (isGameOver) {
         return false;
       }
@@ -55,7 +65,39 @@
         case 40: board.moveDown();  break;
       }
     });
-
+    //移动端事件的监听
+    $(document)[0].addEventListener("touchstart",function (event) {
+        startX=event.touches[0].pageX;
+        startY=event.touches[0].pageY;
+    })
+    $(document)[0].addEventListener('touchend',function (event) {
+        endX=event.changedTouches[0].pageX;
+        endY=event.changedTouches[0].pageY;
+        let spanX=endX-startX;
+        let spanY=endY-startY;
+        //判断滑动方向
+          //解决只产生点击也会移动
+        if(Math.abs(spanX)<size*2 &&Math.abs(spanY)<size*2) return;
+        //x
+        if(Math.abs(spanX)>=Math.abs(spanY)){
+            if(spanX>0){
+                //向右滑动
+                board.moveRight();
+            }else{
+                //向左滑动
+                board.moveLeft();
+            }
+        }else{
+            //y
+            if(spanY>0){
+                //向下滑动
+                board.moveDown();
+            }else{
+                //向上滑动
+                board.moveUp();
+            }
+        }
+    })
     let start=()=> {
       score = 0;
       view.updateScore(0);
