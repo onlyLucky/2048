@@ -71,6 +71,7 @@
         startY=event.touches[0].pageY;
     })
     $(document)[0].addEventListener('touchend',function (event) {
+        event.preventDefault();
         endX=event.changedTouches[0].pageX;
         endY=event.changedTouches[0].pageY;
         let spanX=endX-startX;
